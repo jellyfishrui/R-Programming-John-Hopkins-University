@@ -1,3 +1,6 @@
+# Ranking the best hospitals in a state by Outcome
+# Outcome is the fatality rate of a disease among hear attack, heart failure, and Pneumonia
+
 #Set the working directory
 setwd("E:/DataScience/Coursera/R/Assignment/Assignment3")
 
