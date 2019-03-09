@@ -1,0 +1,55 @@
+#Set the working directory
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment3")
+
+#Define the function
+rankhospital <- function(state_input, outcome, num = "best") {
+  #Read the data
+  outcome_data <- read.csv("progdata/outcome-of-care-measures.csv", colClasses = "character")
+  #Create a database for use
+  used_data <- as.data.frame(cbind(outcome_data[, 2], #Hospital name
+                                   outcome_data[, 7], #State 
+                                   outcome_data[, 11], #heart attack
+                                   outcome_data[, 17], #heart failure
+                                   outcome_data[, 23]), #Pneumonia
+                             stringsAsFactors = FALSE)
+  colnames(used_data) <- c("hospital", "state", "heart attack", "heart failure", "pneumonia")
+
+  #Check whether the state value is valid
+  if (!state_input %in% used_data[, "state"]) {
+    stop("invalid state")
+    
+  } #Check whether the outcome is valid
+  else if (!outcome %in% c("heart attack", "pneumonia", "heart failure")) {
+    stop("invalid outcome")
+    
+  } #Check whether the rank value is numeric
+  
+  else if (is.numeric(num)) {
+    #Extract the data for the called state and outcome
+    fd <- subset(used_data, state == state_input)
+    fd[, eval(outcome)] <- as.numeric(fd[, eval(outcome)])
+      
+    #Sort the data frame
+    fd <- fd[order(fd[, eval(outcome)], fd[, "hospital"]), ]
+    #Check whether the called rank exceeds the record number
+    if (num > nrow(fd)) {
+      stop (NA)
+   }else {
+      output <- fd[, "hospital"][num]
+    }
+  }
+  else if (!is.numeric(num)) {
+    if (num == "best") {
+      fd <- subset(used_data, state == state_input)
+      fd[, eval(outcome)] <- as.numeric(fd[, eval(outcome)])
+      fd <- fd[order(fd[, eval(outcome)], fd[, "hospital"]), ]
+      output <- (fd[, "hospital"][1])}
+    else if (num == "worst") {
+      fd <- subset(used_data, state == state_input)
+      fd[, eval(outcome)] <- as.numeric(fd[, eval(outcome)])
+      fd <- fd[order(fd[, eval(outcome)], fd[, "hospital"], decreasing = TRUE), ]
+      output <- (fd[nrow(fd), "hospital"])
+  }else {
+    stop("invalid rank")}
+  }
+  return (output)}
