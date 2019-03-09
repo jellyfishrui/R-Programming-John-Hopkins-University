@@ -1,0 +1,90 @@
+# Part 1
+# Write a function that calculates Write a function named 'pollutantmean' that calculates the mean of a pollutant 
+# (sulfate or nitrate) across a specified list of monitors. The function 'pollutantmean' takes three arguments: 'directory', 
+# 'pollutant', and 'id'. Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from 
+# the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring 
+# any missing values coded as NA.
+
+# Gather together the same column from the 322 files first
+
+
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment1")
+pollutantmean <- function(directory, pollutant, id = 1:332) {
+  file_list <- list.files(directory, full.names = TRUE) #create a list of files
+  dat <- data.frame() #create an empty data frame to accommodate all files
+  for (i in id) {
+    dat <- rbind(dat, read.csv(file_list[i]))
+    #loop through all the files and rbind them together into the data frame
+  }
+  mean(dat[, pollutant], na.rm = TRUE)
+    #return the mean of the pollutant across all monitors list
+}
+
+# Part 2
+# Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. 
+#The function should return a data frame where the first column is the name of the file and the second column is the number 
+# of complete cases.
+
+
+
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment1")
+complete <- function(directory, id = 1:332) {
+  files <- list.files(directory, full.names = TRUE) #create a list of files
+  dat <- data.frame()
+  for (i in id) {
+    #loop through all the files
+    temp <- read.csv(files[i])
+    #delete all the rows with NAs
+    temp <- na.omit(temp)
+    tNobs <- nrow(temp)
+    #count of the rows of complete data
+    dat <- rbind(dat, data.frame(i, tNobs))
+    #enumerate the complete cases by index
+  }
+  dat
+  #return the final data frame
+}
+
+# Part 3
+# Write a function that takes a directory of data files and a threshold for complete cases and calculates the correlation between 
+# sulfate and nitrate for monitor locations where the number of completely observed cases (on all variables) is greater than the 
+# threshold. The function should return a vector of correlations for the monitors that meet the threshold requirement. If no monitors 
+# meet the threshold requirement, then the function should return a numeric vector of length 0.
+
+
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment1")
+corr <- function(directory, shreshold = 0) {
+  #create a file list
+  files <- list.files(directory, full.names = TRUE)
+  #create an empty vector
+  dat <- vector(mode = "numeric", length = 0)
+  #loop through all files
+  for (i in 1:length(files)) {
+    temp <- read.csv(files[i])
+    #remove all NAs
+    temp <- temp[complete.cases(temp), ]
+    #count the number of observed cases
+    sum_complete <- nrow(temp)
+    if (sum_complete > shreshold){
+      dat <- c(dat, cor(temp$sulfate, temp$nitrate))
+    }
+  }
+  dat
+}
+
+
+# Script to get the pollutant mean
+
+
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment1")
+pollutantmean <- function(directory, pollutant, id = 1:332) {
+  file_list <- list.files(directory, full.names = TRUE) #create a list of files
+  dat <- data.frame() #create an empty data frame to accommodate all files
+  for (i in id) {
+    dat <- rbind(dat, read.csv(file_list[i]))
+    #loop through all the files and rbind them together into the data frame
+  }
+  mean(dat[, pollutant], na.rm = TRUE)
+    #return the mean of the pollutant across all monitors list
+}
+
