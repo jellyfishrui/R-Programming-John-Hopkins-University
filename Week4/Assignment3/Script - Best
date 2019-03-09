@@ -1,0 +1,37 @@
+# Find the best hospital in a state
+# Write a function calledbestthat take two arguments:  
+# the 2-character abbreviated name of a state and anoutcome name.  
+#The function reads theoutcome-of-care-measures.csvfile and returns a character vectorwith  the  
+# name  of  the  hospital  that  has  the  best  (i.e.   lowest)  30-day  mortality  for  the  specified  outcomein that state.  
+
+
+
+setwd("E:/DataScience/Coursera/R/Assignment/Assignment3")
+unzip("rprog_data_ProgAssignment3-data.zip", exdir = "progdata")
+best <- function(state, outcome) {
+  # Read outcome data
+  outcome_data <- read.csv("progdata/outcome-of-care-measures.csv", colClasses = "character")
+  # Check whether the state value is valid
+  if (!state %in% outcome_data$State) {
+    stop("invalid state")
+  }
+  # Check whether the outcome value is valid
+  else {
+    if (outcome == "heart attack") {
+      colnum <- 11
+    }else if (outcome == "heart failure") {
+      colnum <- 17
+    }else if (outcome == "pneumonia") {
+      colnum <- 23
+    }else{
+      stop("invalid outcome")}
+    # Extracting data for the called state
+    result_1 <- subset(outcome_data, State == state)
+    # Get the minimum mortality rate
+    min_mort <- min(as.numeric(result_1[, colnum]), na.rm = TRUE)
+    lowest_mort <- subset(result_1, 
+                               as.numeric(result_1[, colnum]) == min_mort)
+    output <- lowest_mort[, "Hospital.Name"]
+    return(output[order(output)])
+  }
+}
